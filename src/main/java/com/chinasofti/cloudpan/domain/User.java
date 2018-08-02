@@ -1,6 +1,7 @@
 package com.chinasofti.cloudpan.domain;
 
 import javax.persistence.*;
+import java.util.Set;
 
 /**
  * @author William D X Zheng
@@ -21,6 +22,22 @@ public class User {
 
     @Column
     private String password;
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_role",
+            joinColumns = @JoinColumn(name = "username"),
+            inverseJoinColumns = @JoinColumn(name = "role")
+    )
+    private Set<Role> roles;
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
 
     public Integer getUid() {
         return uid;
