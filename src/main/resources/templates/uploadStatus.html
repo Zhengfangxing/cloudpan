@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>上传状态</title>
+</head>
+<body>
+<h1>上传状态</h1>
+<div th:if="${result.status}">
+    <h2 style="color: forestgreen" th:text="${result.message}"/>
+</div>
+<div th:if="${not result.status}">
+    <h2 style="color: red" th:text="${result.message}"/>
+</div>
+<table>
+    <tr>
+        <td><a href="/select">查看详情</a></td>
+        <td><a href="/">继续上传</a></td>
+    </tr>
+</table>
+</body>
+</html>
