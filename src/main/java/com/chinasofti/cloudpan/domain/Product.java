@@ -10,15 +10,36 @@ import java.util.Date;
 @Entity
 @Table(name = "t_product",schema = "db_cloudpan")
 public class Product {
-    @javax.persistence.Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer pid;
+
+    public Product() {
+    }
 
     @Column
     private Date uploadDate;
 
     @Column
     private String fileName;
+
+    @Column
+    private String fileUrl;
+
+    public Product(Date uploadDate, String fileName, String fileUrl) {
+        this.uploadDate = uploadDate;
+        this.fileName = fileName;
+        this.fileUrl = fileUrl;
+    }
+
+    public String getFileUrl() {
+
+        return fileUrl;
+    }
+
+    public void setFileUrl(String fileUrl) {
+        this.fileUrl = fileUrl;
+    }
 
     public Integer getPid() {
         return pid;

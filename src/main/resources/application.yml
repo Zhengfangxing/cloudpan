@@ -7,3 +7,11 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.DerbyDialect
     database: derby
+  mvc:
+    view:
+      prefix: /pages/
+      suffix: .html
+  resources:
+    static-locations: classpath:/testStatic/,classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/
+server:
+  port: 8090

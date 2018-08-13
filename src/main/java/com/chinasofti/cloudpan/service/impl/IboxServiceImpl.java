@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -35,6 +36,9 @@ public class IboxServiceImpl implements IboxService {
         Product product = new Product();
         product.setFileName(file.getOriginalFilename());
         product.setUploadDate(new Date());
+        String fileUrl = "c:\\temp\\" + file.getOriginalFilename();
+        file.transferTo(new File(fileUrl));
+        product.setFileUrl(fileUrl);
         iboxDao.save(product);
     }
 
@@ -50,7 +54,14 @@ public class IboxServiceImpl implements IboxService {
     }
 
     @Override
-    public void delFile(Integer pid) {
+    public boolean delFile(Integer pid) {
+        try {
+            iboxDao.deleteById(pid);
+            return true;
+        }catch (Exception e){
+            return false;
+        }
 
     }
+
 }

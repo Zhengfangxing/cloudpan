@@ -3,26 +3,53 @@ package com.chinasofti.cloudpan.domain;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 
 /**
- * @author William D X Zheng
- * @date 2018/8/7 0:57
+ * @author Charles C Wang
+ * @date 2018/8/13 21:35
  */
 public class Result {
-    private String message;
-    private Boolean status;
+    private Integer code;
+    private String msg;
+    private Object data;
 
-    public String getMessage() {
-        return message;
+    public static Result success(){
+        return new Result(200,"成功",null);
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public static Result error(){
+        return new Result(300,"失败",null);
     }
 
-    public Boolean getStatus() {
-        return status;
+
+    public Result(Integer code, String msg, Object data) {
+        this.code = code;
+        this.msg = msg;
+        this.data = data;
     }
 
-    public void setStatus(Boolean status) {
-        this.status = status;
+    public Result() {
+    }
+
+    public Integer getCode() {
+        return code;
+    }
+
+    public void setCode(Integer code) {
+        this.code = code;
+    }
+
+    public String getMsg() {
+        return msg;
+    }
+
+    public void setMsg(String msg) {
+        this.msg = msg;
+    }
+
+    public Object getData() {
+        return data;
+    }
+
+    public void setData(Object data) {
+        this.data = data;
     }
 }

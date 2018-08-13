@@ -40,5 +40,6 @@ public interface IboxService {
      * 通过ID删除文件
      * @param pid
      */
-    void delFile(Integer pid);
+    boolean delFile(Integer pid);
+
 }
