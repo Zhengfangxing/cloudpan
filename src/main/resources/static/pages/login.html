@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+    <title>心歌文件上传系统</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="0">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="This is my page">
+    <link rel="stylesheet" type="text/css" href=../css/logincss/clicki.web.css?V=20120501" media="screen" />
+    <link rel="stylesheet" type="text/css" href="../css/logincss/clicki.loginandreg.css?V=20120501" media="screen" />
+    <link rel="stylesheet" type="text/css" href="../css/logincss/clicki.webkitanimation.css?V=20120501" media="screen" />
+    <script src="../js/bzbanner/jquery-1.10.2.min.js"></script>
+</head>
+<body>
+<div class="theCenterBox" style="">
+
+    <div class="theLoginBox">
+
+        <div class="loginTxt">登录</div>
+        <div class="theLoginArea" id="loginBox">
+            <form id="leftForm" method="post">
+                <p style="position: relative;">
+                    <label for="LoginForm_email">账号：</label>
+                    <input placeholder="请输入您的账号" name="uacount" id="uacount" type="text" maxlength="255" />
+                    <span>请输入您的账号</span></p>
+                <p style="position: relative;">
+                    <label for="LoginForm_password">密码：</label>
+                    <input placeholder="请输入您的密码" name="upassword" id="upassword" type="password" maxlength="16" />
+                    <span>请输入您的密码</span> </p>
+                <div class="loginSubmitBnt fixPadding">
+                    <div>
+                        <input id="ytautoLogin" type="hidden" value="0" name="LoginForm[rememberMe]" />
+                        <input id="autoLogin" class="theRememberMe" name="LoginForm[rememberMe]" value="1" checked="checked" type="checkbox" />
+                        <label class="theRememberMeLabel" for="autoLogin">记住用户名和密码</label>
+                        <em class="forgotPasswordEm"><a href="#" title="忘记密码">忘记密码?</a>&nbsp;&nbsp;&nbsp;<a href="#" onclick="zhuce()" title="马上注册">马上注册</a></em>
+                        <div class="login_submit">
+                            <input name="userSubmit" class="theSubmitButton" value="" type="button" onclick="subm()" />
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    function zhuce(){
+            $.ajax({
+                url: '../user/registerUser?uname=wanghaha&uaccount=admin&password=admin',
+                type: 'get',
+                dataType: 'json',
+                success: function (data) {
+                    console.log(data);
+                    var code = data.code;
+                    console.log(code);
+                    if(code==200){
+                        alert("注册成功！账号：admin,密码：admin")
+                    }else{
+                        alert("登录失败！");
+                    }
+                }
+            });
+
+    }
+
+    function subm() {
+        var acount = $("#uacount").val();
+        var password = $("#upassword").val();
+
+        $.ajax({
+            url: '../user/login',
+            type: 'post',
+            dataType: 'text',
+            data: {"acount":acount,"password":password},
+            success: function (data) {
+                var result = JSON.parse(data);
+                console.log(result);
+                var code = result.code;
+                console.log(code);
+                if(code==200){
+                    window.location.href="index.html";
+                }else{
+                    alert("登录失败！");
+                }
+            }
+        });
+
+    }
+    
+</script>
+<!-- jQuery--.>
+<script src="../bower_components/jquery/dist/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript --.>
+<script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+
+<!-- Metis Menu Plugin JavaScript --.>
+<script src="../bower_components/metisMenu/dist/metisMenu.min.js"></script>
+
+<!-- Custom Theme JavaScript --.>
+<script src="../dist/js/sb-admin-2.js"></script>
+-->
+</body>
+</html>
