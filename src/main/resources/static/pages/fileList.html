@@ -1,0 +1,339 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+    <base href="<%=basePath%>">
+    <title>心歌文件管理系统</title>
+    <meta charset="UTF-8">
+
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="0">
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="This is my page">
+    <!--
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    -->
+    <!-- jQuery -->
+    <script src="../bower_components/jquery/dist/jquery.min.js"></script>
+
+    <link href="../bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet"></link>
+    <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../bower_components/bootstrap-table/bootstrap-table.js"></script>
+    <link rel="stylesheet" href="../bower_components/bootstrap-table/bootstrap-table.css" type="text/css"></link>
+    <script type="text/javascript" src="../bower_components/bootstrap-table/bootstrap-table-export.js"></script>
+    <script src="../js/jquery.form.js"></script>
+
+
+    <script type="text/javascript" src="../js/bootbox.js"></script>
+    <script type="text/javascript">
+        $.ajax({
+            type: "post",//数据发送的方式（post 或者 get）
+            url: "../file/list",//要发送的后台地址
+            // data: {val1:"1",val2:"2"},//要发送的数据（参数）格式为{'val1':"1","val2":"2"}
+            dataType: "json",//后台处理后返回的数据格式
+            success: function (data) {//ajax请求成功后触发的方法
+                var companys= data.data;
+                console.log(companys)
+                $('#reportTable').bootstrapTable({
+                    //type: "post",
+                    //url: "../list.do",
+                    //dataType: "json",
+                    cache: false,
+                    toolbar: '#toolbar',
+                    height: 410,
+                    striped: true,
+                    pagination: true,
+                    pageSize: 5,
+                    pageNumber:1,
+                    pageList: [10, 20, 50, 100, 200, 500],
+                    search: true,
+                    //showColumns: true,
+
+                    clickToSelect: true,
+                    columns: [{field: 'chebox',align:"center",valign:"middle",checkbox: true},
+                        {field:"fileName",title:"文件名",align:"center",valign:"middle",sortable:"true"},
+                        {field:"fileUrl",title:"文件链接",align:"center",valign:"middle",sortable:"true"},
+
+                        {field:"uploadDate",title:"创建时间",align:"center",valign:"middle",sortable:"true",formatter :function format4(value){
+                            if(value==null){
+                                return "";
+                            }
+                            console.log("value")
+                            console.log(value)
+                            var date = new Date(value);
+                            return   date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
+                        }},
+
+                        {field:"pid",title:"操作",align:"center",valign:"middle",formatter: function format1(Row,Column,value){
+                            console.log(Column.fileUrl);
+
+                            return '<input type="button" onclick="del('+value+')" value="删除" class="btn btn-primary" ><a href="'+Column.fileUrl+'"  class="btn btn-primary">下载</a>';
+                        }}],
+                    data:companys,
+                    onPageChange: function (size, number) {
+                        //$("#pageSizeInput").val(size);
+                        //$("#pageNumberInput").val(number);
+
+                        //var form = $('#tableForm');
+                        //form.action= '${base}/showReport';
+                        //form.submit();
+                    },
+                    //onSort: function (name, order) {
+                    // },
+                    //formatShowingRows: function (pageFrom, pageTo, totalRows) {
+                    //	return '';
+                    // },
+                    //formatRecordsPerPage: function () {
+                    //	return '';
+                    //  },
+                    formatNoMatches: function(){
+                        return '无符合条件的记录';
+                    }
+                });
+
+                $(window).resize(function () {
+                    $('#reportTable').bootstrapTable('resetView');
+                });
+
+            },
+            error: function (msg) {//ajax请求失败后触发的方法
+                alert(msg);//弹出错误信息
+                return;
+            }
+        });
+
+        function download(value){
+//            var fileUrl = Column.fileUrl;
+            console.log(value)
+//            window.location.href=fileUrl;
+        }
+
+
+        function del1(){
+            var selectRow = $("#reportTable").bootstrapTable('getSelections');
+            if(selectRow.length==0){
+                bootbox.alert("请选择要删除的企业！");
+                return;
+            }
+            var list = new Array();
+            for(var i = 0;i<selectRow.length;i++){
+                var id = selectRow[i].cid;
+                alert(id);
+                list.push(id);
+            }
+            console.log(list.join());
+            var ids = list.join();
+            $.ajax({
+                url : 'delCompanys.do' ,
+                type:'post',
+                dateTyep:'text',
+                data : {ids:ids},
+                success: function(data){
+                    bootbox.alert(data.msg);
+                    location.reload();
+                },
+                error : function(){
+                    bootbox.alert("批量删除失败!");
+                }
+            });
+        }
+        function del(id){
+            bootbox.confirm("确定要删除吗?", function(result) {
+                if(result){
+                    $.ajax({
+                        url: '../file/delete?id='+id,
+                        type: 'post',
+                        dataType: 'text',
+                        //data: id,
+                        success: function (data) {
+                            var data1 = JSON.parse(data);
+                            bootbox.alert(data1.msg);
+                            console.log(data1);
+                            location.reload();
+                        }
+                    });
+                }else{
+                    return;
+                }
+            });
+        }
+
+        function uploadDate(id){
+
+            $.ajax({
+                url: 'findCompany.do?id='+id,
+                type: 'post',
+                dataType: 'text',
+                //data: id,
+                success: function (data) {
+                    var data1 = JSON.parse(data);
+                    var mcompany = data1.mcompany;
+                    if (data.length > 0)
+                        $('#cname').val(mcompany.cname);
+                    $('#cnum').val(mcompany.cnum);
+                    $('#cid').val(mcompany.cid);
+                    $('#cscale').val(mcompany.cscale);
+                    $('#cdesc').val(mcompany.cdesc);
+                    $("input[type=radio][name=cismoreorganization][value="+mcompany.cismoreorganization+"]").attr("checked",true);
+                    console.log(mcompany);
+                    $('#myModal').modal('show');
+                }
+            });
+        }
+        function add(){
+            $('#form1')[0].reset();
+            $('#myModal').modal('show');
+        }
+        function doadd(){
+//            var file = $('#file').file;
+//            var formData = new FormData();
+//            formData.append("file",file);
+//            console.log(formData)
+//            $.ajax({
+//                url: '../file/upload',
+//                type: 'post',
+//                data: formData,
+//                cache:false,
+//                processData: false,
+//                contentType: false,
+//                success: function (data) {
+//                    var data1 = JSON.parse(data);
+//                    bootbox.alert(data1.msg);
+//                    location.reload();
+//                },
+//                error :function (){
+//                    bootbox.alert("ajax错误");
+//                }
+//            });
+            $("#form1").ajaxForm({
+
+                url : "../file/upload", // 请求的url
+                type : "post", // 请求方式
+                dataType : "json", // 响应的数据类型
+                async : true, // 异步
+                success : function(data) {
+                    console.log(data);
+                    bootbox.alert(data.msg);
+                    location.reload();
+                },
+                error : function() {
+                    alert("数据加载失败！");
+                }
+            });
+
+            $('#myModal').modal('hide');
+
+        }
+
+        /*
+         $(function(){
+         $('#mdate').dateRangePicker(
+         {
+         singleMonth: true,
+         showShortcuts: false,
+         showTopbar: false
+         });
+         })
+         */
+
+
+
+        function update1(){
+            var selectRow = $("#reportTable").bootstrapTable('getSelections');
+            if(selectRow.length==0){
+                bootbox.alert("请选择要修改的用户！");
+                return;
+            }
+            if(selectRow.length>1){
+                bootbox.alert("一次只能修改一个用户！");
+                return;
+            }
+            console.log(selectRow);
+            var id = selectRow[0].cid
+
+            $.ajax({
+                url: 'findCompany.do?id='+id,
+                type: 'post',
+                dataType: 'text',
+                //data: id,
+                success: function (data) {
+                    var data1 = JSON.parse(data);
+                    var mcompany = data1.mcompany;
+                    if (data.length > 0)
+                        $('#cname').val(mcompany.cname);
+                    console.log($('#cname'));
+                    $('#cnum').val(mcompany.cnum);
+                    $('#cid').val(mcompany.cid);
+                    $('#cscale').val(mcompany.cscale);
+                    $('#cdesc').val(mcompany.cdesc);
+                    $("input[type=radio][name=cismoreorganization][value="+mcompany.cismoreorganization+"]").attr("checked",true);
+                    console.log(mcompany);
+                    $('#myModal').modal('show');
+                }
+            });
+        }
+
+        function changeName(e){
+            var span = document.getElementById('name');
+            span.innerHTML = e.currentTarget.files[0].name;
+        }
+
+
+    </script>
+
+
+
+</head>
+
+<body>
+<!-- 表主体 -->
+<table id='reportTable'></table>
+<!-- 添加和修改 -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+                <h4 class="modal-title" id="myModalLabel">用户增加</h4>
+
+            </div>
+            <form id="form1"  method="POST" enctype="multipart/form-data" >
+                <div class="modal-body">
+                    <table>
+                        <tr>
+                            <td>文件上传：<input type="file" id="file" name="file" value="" /></td>
+                        </tr>
+
+
+
+                    </table>
+                </div>
+                <div class="modal-footer">
+
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+
+                    <button id ="companysubmit" type="submit" class="btn btn-primary" onclick="doadd()" >保存</button>
+
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+</div>
+<!-- toobar -->
+
+<!-- toobar -->
+<div id="toolbar" style="display: block">
+    <input type="button" class="btn btn-primary" onclick="add()" value="增加" >
+    <input type="button" class="btn btn-primary" onclick="update1()" value="修改" >
+    <input type="button" class="btn btn-primary" onclick="del1()" value="删除" >
+</div>
+
+</body>
+</html>
