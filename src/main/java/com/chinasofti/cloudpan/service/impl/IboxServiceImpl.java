@@ -36,7 +36,12 @@ public class IboxServiceImpl implements IboxService {
         Product product = new Product();
         product.setFileName(file.getOriginalFilename());
         product.setUploadDate(new Date());
-        String fileUrl = "c:\\temp\\" + file.getOriginalFilename();
+        String reaPath = "c:\\temp\\";
+        File file1 = new File(reaPath);
+        if (!file1.exists()) {
+            file1.mkdir();
+        }
+        String fileUrl = reaPath+ file.getOriginalFilename();
         file.transferTo(new File(fileUrl));
         product.setFileUrl(fileUrl);
         iboxDao.save(product);
