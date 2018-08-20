@@ -38,7 +38,7 @@ public class fileManagerControler {
 
 
     /**
-     * @author Charles C Wang
+     * @authorSongchao 宋超
      * @date 2018/8/13 21:15
      * @return Result
      */
